@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@tanstack/react-query": "^5.59.20"
+  }
+}
