@@ -1,0 +1,24 @@
+date,category,amount,description
+2022-08-27 08:13:02 +0000,Coffee,9.0,Morning coffee
+2022-08-27 10:46:17 +0000,Market,0.87,Grocery store
+2022-08-27 13:30:26 +0000,Coffee,7.6,Afternoon coffee
+2022-08-27 15:14:03 +0000,Coffee,6.7,Coffee break
+2022-08-27 19:10:58 +0000,Restaurant,10.0,Dinner out
+2022-08-27 19:59:10 +0000,Market,5.7,Market visit
+2022-08-28 09:48:55 +0000,Transport,2.0,Bus fare
+2022-08-28 10:17:35 +0000,Coffee,7.6,Coffee shop
+2022-08-28 12:22:39 +0000,Coffee,7.6,Lunch coffee
+2022-08-28 16:40:34 +0000,Coffee,15.2,Evening coffee
+2022-08-29 08:35:23 +0000,Restaurant,3.0,Snack
+2022-08-29 10:05:37 +0000,Restaurant,14.0,Lunch restaurant
+2022-08-29 15:19:54 +0000,Restaurant,10.0,Cafe meal
+2022-08-29 15:59:24 +0000,Market,1.7,Convenience store
+2022-08-30 04:53:30 +0000,Market,1.6,Late market
+2022-08-30 11:06:48 +0000,Restaurant,17.6,Dinner
+2022-08-30 15:13:47 +0000,Market,13.71,Weekly groceries
+2022-08-31 04:22:11 +0000,Market,16.35,Bulk purchase
+2022-08-31 09:48:00 +0000,Restaurant,8.0,Breakfast out
+2022-08-31 14:23:57 +0000,Coffee,6.6,Quick coffee
+2022-08-31 16:34:21 +0000,Coffee,11.4,Meeting coffee
+2022-09-01 08:00:00 +0000,Transport,3.5,Taxi ride
+2022-09-01 12:30:00 +0000,Transport,4.2,Train ticket

@@ -1,0 +1,10 @@
+date,category,amount,description
+2026-01-01,Groceries,120.5,Walmart groceries
+2026-01-02,Transport,45.0,Uber ride
+2026-01-03,Entertainment,25.0,Netflix subscription
+2026-01-04,Dining,60.0,Restaurant dinner
+2026-01-05,Groceries,85.3,Kroger groceries
+2026-01-06,Transport,30.0,Gas station
+2026-01-07,Healthcare,150.0,Pharmacy medicine
+2026-01-08,Shopping,200.0,Amazon order
+2026-01-09,Utilities,120.0,Electric bill
