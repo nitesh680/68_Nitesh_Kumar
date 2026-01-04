@@ -1,8 +1,14 @@
 import type { PropsWithChildren } from 'react'
 
 export function Card({ children }: PropsWithChildren) {
-  return <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">{children}</div>
+  return (
+    <div className="rounded-2xl border border-white/50 bg-white/70 p-5 shadow-sm backdrop-blur transition hover:shadow-md">
+      {children}
+    </div>
+  )
 }
+
+export default Card
 
 export function CardTitle({ children }: PropsWithChildren) {
   return <div className="text-sm font-semibold text-slate-900">{children}</div>

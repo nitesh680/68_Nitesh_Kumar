@@ -1,35 +1,44 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import Button from '../components/Button'
 import Input from '../components/Input'
 import { Card, CardHint, CardTitle } from '../components/Card'
 import { api } from '../lib/api'
+import type { TransactionUploadResponse } from '../types'
 
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
 
-  async function onUpload() {
-    if (!file) return
+  const onUpload = async () => {
+    if (!file || loading) return
+
+    setLoading(true)
     setMessage(null)
     setError(null)
-    setLoading(true)
-    console.log('Auth token before upload:', api.defaults.headers.common.Authorization)
+
+    const formData = new FormData()
+    formData.append('file', file)
+
     try {
-      const form = new FormData()
-      form.append('file', file)
-      const res = await api.post<{ inserted: number }>('/transactions/upload', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      setMessage(`Uploaded. Inserted: ${res.data.inserted}`)
-    } catch (err: any) {
-      const detail = err?.response?.data?.detail
-      const status = err?.response?.status
-      const msg = detail ? `[${status}] ${detail}` : `${status || 'Network'} Upload failed`
-      setError(msg)
-      console.error('Upload error', { status, detail, err })
+      const response = await api.post<TransactionUploadResponse>('/transactions/upload', formData)
+      setMessage(`Inserted ${response.data.inserted} transactions`)
+
+      if (response.data.latest_month) {
+        localStorage.setItem('selected_month', response.data.latest_month)
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['trend'] })
+      queryClient.invalidateQueries({ queryKey: ['recent'] })
+      queryClient.invalidateQueries({ queryKey: ['insights'] })
+    } catch (e: any) {
+      const msg = e?.response?.data?.detail || e?.message || 'Upload failed'
+      setError(String(msg))
     } finally {
       setLoading(false)
     }
@@ -37,8 +46,14 @@ export default function Upload() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="text-2xl font-semibold text-slate-900">Upload CSV</div>
-      <div className="mt-1 text-sm text-slate-500">CSV must include: date, amount, description</div>
+      <div className="rounded-3xl border border-white/60 bg-white/60 p-6 shadow-sm backdrop-blur">
+        <div className="text-2xl font-semibold text-slate-900">Upload transactions</div>
+        <div className="mt-1 text-sm text-slate-500">
+          Upload a CSV with <span className="font-medium text-slate-700">date</span>,{' '}
+          <span className="font-medium text-slate-700">amount</span>,{' '}
+          <span className="font-medium text-slate-700">description</span>.
+        </div>
+      </div>
 
       <div className="mt-6">
         <Card>
@@ -46,7 +61,14 @@ export default function Upload() {
           <CardHint>Example row: 2026-01-01,120.5,Walmart groceries</CardHint>
 
           <div className="mt-4 space-y-3">
-            <Input type="file" accept=".csv" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-4">
+              <div className="text-sm font-medium text-slate-800">Choose CSV file</div>
+              <div className="mt-1 text-xs text-slate-500">Max size depends on your browser. Large files may take longer.</div>
+              <div className="mt-3">
+                <Input type="file" accept=".csv" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              </div>
+              {file ? <div className="mt-2 text-xs text-slate-600">Selected: {file.name}</div> : null}
+            </div>
 
             {message ? <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{message}</div> : null}
             {error ? <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div> : null}

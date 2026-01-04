@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard'
 import History from './pages/History'
 import Insights from './pages/Insights'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import Signup from './pages/Signup'
 import Upload from './pages/Upload'
 import Export from './pages/Export'
@@ -63,6 +65,23 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Export />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

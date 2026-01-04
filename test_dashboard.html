@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .result { background: #f0f8ff; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Test</h1>
+    
+    <div class="card">
+        <h3>Test Data Insertion</h3>
+        <button onclick="insertTestData()">Insert Test Data</button>
+        <button onclick="checkTransactions()">Check Transactions</button>
+        <button onclick="testDashboard()">Test Dashboard</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h3>Dashboard Results</h3>
+        <div id="dashboard"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8005/api';
+        let authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZWUwNTJjYy1jYTkxLTQ4OWUtYTRmZC0yODRkZTA1NmRlOWEiLCJleHAiOjE3Njk5NzQ2Njl9.dDoW-tIGL066r83m3lodE1dNGFFayKQJckdND_r7ktI';
+
+        async function insertTestData() {
+            try {
+                const response = await fetch(`${API_BASE}/transactions/test-data`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `✅ ${data.message}`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function checkTransactions() {
+            try {
+                const response = await fetch(`${API_BASE}/transactions/test`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `📊 ${data.message}`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function testDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/analytics/dashboard?month=2026-01`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                
+                document.getElementById('dashboard').innerHTML = `
+                    <h4>Dashboard Results:</h4>
+                    <p><strong>Total Spend:</strong> $${data.total_spend.toFixed(2)}</p>
+                    <p><strong>Top Category:</strong> ${data.top_category} ($${data.top_category_spend.toFixed(2)})</p>
+                    <p><strong>Avg Confidence:</strong> ${data.avg_confidence ? (data.avg_confidence * 100).toFixed(1) + '%' : 'N/A'}</p>
+                    <p><strong>Month:</strong> ${data.month}</p>
+                `;
+                
+                document.getElementById('result').innerHTML = `✅ Dashboard loaded successfully`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `❌ Dashboard Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

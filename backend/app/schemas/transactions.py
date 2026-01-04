@@ -22,6 +22,9 @@ class TransactionOut(BaseModel):
 
 class TransactionUploadResponse(BaseModel):
     inserted: int
+    min_month: str | None = None
+    max_month: str | None = None
+    latest_month: str | None = None
 
 
 class CategorizeResponse(BaseModel):

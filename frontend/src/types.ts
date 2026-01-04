@@ -24,3 +24,10 @@ export type DashboardSummary = {
 export type TrendPoint = { month: string; total_spend: number }
 
 export type AnomalyPoint = { date: string; amount: number; description: string; zscore: number }
+
+export type TransactionUploadResponse = {
+  inserted: number
+  min_month?: string | null
+  max_month?: string | null
+  latest_month?: string | null
+}

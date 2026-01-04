@@ -20,38 +20,65 @@ async def dashboard(month: str, user=Depends(get_current_user), db=Depends(get_d
     else:
         end = datetime.fromisoformat(month[:5] + f"{int(month[5:7]) + 1:02d}" + "-01")
 
+    print(f"Dashboard request for user: {user['_id']}, month: {month}")
+    print(f"Date range: {start} to {end}")
+
+    # Use aggregation for better performance - get all metrics in one query
     pipeline = [
         {"$match": {"user_id": user["_id"], "date": {"$gte": start, "$lt": end}}},
-        {
-            "$group": {
-                "_id": "$category",
-                "total": {"$sum": "$amount"},
-                "avg_conf": {"$avg": "$confidence"},
-            }
-        },
+        {"$group": {
+            "_id": None,
+            "total_spend": {"$sum": "$amount"},
+            "count": {"$sum": 1},
+            "categories": {"$push": "$category"},
+            "amounts": {"$push": "$amount"},
+            "confidences": {"$push": "$confidence"}
+        }}
     ]
+    
+    result = await db.transactions.aggregate(pipeline).to_list(length=1)
+    
+    # Safe defaults if no data exists
+    if not result or result[0]["count"] == 0:
+        print("No transactions found for this month, returning safe defaults")
+        return DashboardSummary(
+            month=month,
+            total_spend=0.0,
+            top_category=None,
+            top_category_spend=0.0,
+            avg_confidence=None,
+        )
+    
+    data = result[0]
+    total_spend = float(data["total_spend"])
+    
+    print(f"Found {data['count']} transactions, total spend: {total_spend}")
 
-    total_spend = 0.0
+    # Calculate top category from the aggregated data
+    category_counts = {}
+    for i, cat in enumerate(data["categories"]):
+        if cat:
+            category_counts[cat] = category_counts.get(cat, 0) + data["amounts"][i]
+    
     top_category = None
-    top_spend = 0.0
-    avg_conf_vals = []
-
-    async for row in db.transactions.aggregate(pipeline):
-        tot = float(row.get("total") or 0.0)
-        total_spend += tot
-        if tot > top_spend:
-            top_spend = tot
-            top_category = row.get("_id") or "Other"
-        if row.get("avg_conf") is not None:
-            avg_conf_vals.append(float(row["avg_conf"]))
-
-    avg_confidence = sum(avg_conf_vals) / len(avg_conf_vals) if avg_conf_vals else None
+    top_category_spend = 0.0
+    if category_counts:
+        top_category = max(category_counts, key=category_counts.get)
+        top_category_spend = category_counts[top_category]
+    
+    # Calculate average confidence (filter out None values)
+    valid_confidences = [c for c in data["confidences"] if c is not None]
+    avg_confidence = sum(valid_confidences) / len(valid_confidences) if valid_confidences else None
+    
+    print(f"Top category: {top_category} ({top_category_spend})")
+    print(f"Average confidence: {avg_confidence}")
+    print(f"Category breakdown: {category_counts}")
 
     return DashboardSummary(
         month=month,
         total_spend=total_spend,
         top_category=top_category,
-        top_category_spend=top_spend,
+        top_category_spend=top_category_spend,
         avg_confidence=avg_confidence,
     )
 

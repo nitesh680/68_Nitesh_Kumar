@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class TrainRequest(BaseModel):
-    dataset_path: str = "../archive (2)/budget_data.csv"
+    dataset_path: str = ""  # Will be provided via upload, not hardcoded
     text_column: str = "description"
     label_column: str = "category"
 
