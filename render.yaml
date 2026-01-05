@@ -1,0 +1,43 @@
+services:
+  # Backend FastAPI Service
+  - type: web
+    name: expense-tracker-backend
+    runtime: python
+    plan: free
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: expense_ai
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: CORS_ORIGINS
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: MODEL_DIR
+        value: ./artifacts
+      - key: CONFIDENCE_THRESHOLD
+        value: 0.65
+
+  # Frontend Static Site
+  - type: web
+    name: expense-tracker-frontend
+    runtime: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /.*
+        destination: /index.html

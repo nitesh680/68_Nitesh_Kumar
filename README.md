@@ -442,7 +442,36 @@ Below is a detailed description of the purpose of each important file in this re
 
 ---
 
+# Deploy on Render
+
+This repo includes a `render.yaml` Blueprint to create two services automatically:
+
+1. **Backend (FastAPI)** – Python web service
+2. **Frontend (Static)** – React app built and served as static files
+
+## Steps
+
+1. In Render, click **New Blueprint** and connect this GitHub repo.
+2. Render will read `render.yaml` and propose the two services.
+3. Set the following **environment variables** on the backend service:
+   - `MONGODB_URI` – MongoDB connection string (e.g. `mongodb+srv://...`)
+   - `JWT_SECRET` – Random secret string
+   - `CORS_ORIGINS` – Your Render frontend URL (e.g. `https://expense-tracker-frontend.onrender.com`)
+   - `GEMINI_API_KEY` – (Optional) Your Gemini API key for AI insights
+4. Set the following **environment variable** on the frontend service:
+   - `VITE_API_BASE_URL` – Your Render backend URL (e.g. `https://expense-tracker-backend.onrender.com`)
+5. Click **Create Blueprint**. Render will build and deploy both services.
+
+## Notes
+
+- The backend runs on Render’s `$PORT` (handled by `render.yaml`).
+- The frontend is built and served from `frontend/dist`.
+- Ensure your MongoDB is accessible from the internet (e.g. MongoDB Atlas).
+
+---
+
 # Status
 
 - **README file documentation**: complete and kept in sync with current code.
+- **Render deployment ready**: `render.yaml` and `vite.config.ts` configured.
 
